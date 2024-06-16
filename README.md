@@ -14,6 +14,6 @@ $ docker-compose up -d
 
 ## Links
 
-- Api - [http://localhost:3000/](http://localhost:3000//)
+- Api - [http://localhost:3000/](http://localhost:3000/)
 - pgAdmin - [http://localhost:5050](http://localhost:5050/)
 - Kafka dev environment - [http://localhost:3040/](http://localhost:3040/)
