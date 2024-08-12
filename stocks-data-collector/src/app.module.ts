@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { StockApiModule } from './stock-api/stock-api.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), StockApiModule],
+  imports: [ConfigModule.forRoot({ envFilePath: '../.env' }), StockApiModule],
   controllers: [],
   providers: [],
 })

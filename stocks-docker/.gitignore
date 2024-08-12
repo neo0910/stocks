@@ -1,5 +1,2 @@
-.env
-.env.prod
-
 docker/data/postgres/*
 docker/data/pgadmin/*

@@ -1,33 +1,5 @@
 version: "3"
 services:
-  stocks-api:
-    build:
-      context: ../stocks-api
-      dockerfile: ../stocks-docker/Dockerfile.stocks-api
-    env_file:
-      - ./.env
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
-    volumes:
-      - ../stocks-api:/usr/app
-    depends_on:
-      - stocks-db
-      - stocks-kafka
-
-  stocks-data-collector:
-    build:
-      context: ../stocks-data-collector
-      dockerfile: ../stocks-docker/Dockerfile.stocks-data-collector
-    env_file:
-      - ./.env
-    restart: unless-stopped
-    volumes:
-      - ../stocks-data-collector:/usr/app
-    depends_on:
-      - stocks-db
-      - stocks-kafka
-
   stocks-db:
     image: postgres:14-alpine
     container_name: stocks-db
@@ -35,7 +7,7 @@ services:
     ports:
       - 5432:5432
     env_file:
-      - ./.env
+      - ../.env
     environment:
       PGDATA: /data/postgres
     volumes:
@@ -47,7 +19,7 @@ services:
     ports:
       - 5050:80
     env_file:
-      - ./.env
+      - ../.env
     volumes:
       - ./docker/data/pgadmin:/var/lib/pgadmin
     restart: unless-stopped
@@ -62,7 +34,7 @@ services:
       - 7083:7083
       - 9092:9092
     environment:
-      ADV_HOST: stocks-kafka
+      ADV_HOST: localhost
       RUNTESTS: 0
       SAMPLEDATA: 0
       BROKER_PORT: 9092
