@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/stocks-api/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/stocks-api/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/stocks-api",
+  "projects": {
+    "stocks-api": {
+      "type": "application",
+      "root": "apps/stocks-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/stocks-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/stocks-api/tsconfig.app.json"
+      }
+    },
+    "stocks-data-collector": {
+      "type": "application",
+      "root": "apps/stocks-data-collector",
+      "entryFile": "main",
+      "sourceRoot": "apps/stocks-data-collector/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/stocks-data-collector/tsconfig.app.json"
+      }
+    },
+    "stocks-models": {
+      "type": "library",
+      "root": "libs/stocks-models",
+      "entryFile": "index",
+      "sourceRoot": "libs/stocks-models/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/stocks-models/tsconfig.lib.json"
+      }
+    }
+  }
+}
