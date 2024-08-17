@@ -8,9 +8,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { TickerList } from '@app/stocks-models/models/ticker-list.model';
 
-import { TickerListModel } from './ticker-list.model';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('ticker-list')
@@ -25,8 +25,8 @@ export class TickerListController {
   async find(@Param('keyword') keyword: string) {}
 
   @Post('create')
-  async create(@Body() dto: TickerListModel) {}
+  async create(@Body() dto: TickerList) {}
 
   @Patch(':id')
-  async patch(@Param('id') id: string, @Body() dto: TickerListModel) {}
+  async patch(@Param('id') id: string, @Body() dto: TickerList) {}
 }

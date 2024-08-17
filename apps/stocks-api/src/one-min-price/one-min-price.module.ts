@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { OneMinPrice } from '@app/stocks-models';
+
 import { TickerModule } from '../ticker/ticker.module';
 
-import { OneMinPrice } from './one-min-price.model';
 import { OneMinPriceController } from './one-min-price.controller';
 import { OneMinPriceService } from './one-min-price.service';
 

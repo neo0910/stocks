@@ -4,8 +4,9 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { User } from '@app/stocks-models';
+
 import { getJWTConfig } from '../shared/configs/jwt.config';
-import { User } from '../shared/models/user.model';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';

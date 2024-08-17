@@ -1,10 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { DailyPrice } from '../../daily-price/daily-price.model';
-import { OneMinPrice } from '../../one-min-price/one-min-price.model';
-import { Ticker } from '../../ticker/ticker.model';
-import { User } from '../../shared/models/user.model';
+import { DailyPrice } from '../models/daily-price.model';
+import { OneMinPrice } from '../models/one-min-price.model';
+import { Ticker } from '../models/ticker.model';
+import { User } from '../models/user.model';
 
 export const getTypeOrmConfig = (
   configService: ConfigService,

@@ -3,9 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { Ticker } from '@app/stocks-models';
+
 import { getKafkaClientConfig } from '../shared/configs/kafka-client.config';
 
-import { Ticker } from './ticker.model';
 import { TickerController } from './ticker.controller';
 import { TickerService } from './ticker.service';
 

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 
-import { Ticker } from '../ticker/ticker.model';
+import { DailyPrice } from '@app/stocks-models';
+import { Ticker } from '@app/stocks-models';
 
-import { DailyPrice } from './daily-price.model';
 import { DailyPriceQueryDto } from './dto/daily-price-query.dto';
 
 @Injectable()

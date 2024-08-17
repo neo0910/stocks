@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
 
-import { Ticker } from '../ticker/ticker.model';
+import { OneMinPrice } from '@app/stocks-models';
 
-import { OneMinPrice } from './one-min-price.model';
+import { Ticker } from '@app/stocks-models';
+
 import { OneMinPriceQueryDto } from './dto/one-min-price-query.dto';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Entity, Column } from 'typeorm';
 
-import { Base } from '../shared/models/base.model';
+import { Base } from './base.model';
 
 @Entity()
 export class Ticker extends Base {

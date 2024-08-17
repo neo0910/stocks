@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 
-import { User } from '../shared/models/user.model';
+import { User } from '@app/stocks-models';
 
 import { AuthDto } from './dto/auth.dto';
 import { USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from './auth.constants';

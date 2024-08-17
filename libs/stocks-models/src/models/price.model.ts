@@ -1,8 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
-import { Ticker } from '../../ticker/ticker.model';
-
 import { Base } from './base.model';
+import { Ticker } from './ticker.model';
 
 @Entity()
 export class Price extends Base {

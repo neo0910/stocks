@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Ticker } from './ticker.model';
+import { Ticker } from '@app/stocks-models';
+
 import { TickerDto } from './dto/ticker.dto';
 
 @Injectable()
