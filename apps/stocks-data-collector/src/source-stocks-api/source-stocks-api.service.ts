@@ -3,25 +3,26 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 
-import { BASE_URL, STOCK_API_FUNCTIONS } from './stock-api.constants';
+import { PriceDto } from '@app/stocks-models';
+
+import { BASE_URL, STOCK_API_FUNCTIONS } from './source-stocks-api.constants';
 import {
   FindByKeywordsParams,
   GetDailySeriesParams,
   GetIntradaySeriesParams,
   OutputSize,
-  ProcessedPrice,
   RawDailySeries,
   RawFindByKeywordsData,
   RawIntradaySeries,
-} from './stock-api.types';
+} from './source-stocks-api.types';
 import {
   getMonthParam,
   processFindResult,
   processPriceResult,
-} from './stock-api.utils';
+} from './source-stocks-api.utils';
 
 @Injectable()
-export class StockApiService {
+export class SourceStocksApiService {
   token: string;
 
   constructor(
@@ -49,7 +50,7 @@ export class StockApiService {
     }
   }
 
-  async getDailySeries(ticker: string): Promise<ProcessedPrice[]> {
+  async getDailySeries(ticker: string): Promise<PriceDto[]> {
     const params: GetDailySeriesParams = {
       apikey: this.token,
       function: STOCK_API_FUNCTIONS.DAILY_SERIES,
@@ -62,7 +63,7 @@ export class StockApiService {
         this.httpService.get<RawDailySeries>(BASE_URL, { params }),
       );
 
-      return processPriceResult(data, 'daily');
+      return processPriceResult(data, 'daily', ticker);
     } catch (e) {
       Logger.error(e);
     }
@@ -85,7 +86,7 @@ export class StockApiService {
         this.httpService.get<RawIntradaySeries>(BASE_URL, { params }),
       );
 
-      return processPriceResult(data, '1min');
+      return processPriceResult(data, '1min', ticker);
     } catch (e) {
       Logger.error(e);
     }

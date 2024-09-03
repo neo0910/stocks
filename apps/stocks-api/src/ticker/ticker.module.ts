@@ -17,10 +17,10 @@ import { TickerService } from './ticker.service';
     TypeOrmModule.forFeature([Ticker]),
     ClientsModule.registerAsync([
       {
-        name: 'STOCKS_DATA_COLLECTOR_CLIENT',
+        name: 'TICKER_COLLECTOR_CLIENT',
         imports: [ConfigModule],
         inject: [ConfigService],
-        useFactory: getKafkaClientConfig,
+        useFactory: getKafkaClientConfig('ticker'),
       },
     ]),
   ],

@@ -1,41 +1,42 @@
-import { ENTRY_KEY_REGEXP } from './stock-api.constants';
+import { PriceDto, TickerDto } from '@app/stocks-models';
+
+import { ENTRY_KEY_REGEXP } from './source-stocks-api.constants';
 import {
-  FindByKeywordsData,
-  ProcessedPrice,
   RawDailySeries,
   RawFindByKeywordsData,
   RawIntradaySeries,
-} from './stock-api.types';
+} from './source-stocks-api.types';
 
 export const processFindResult = ({
   bestMatches,
-}: RawFindByKeywordsData): FindByKeywordsData[] => {
-  return bestMatches.map<FindByKeywordsData>((entry) =>
+}: RawFindByKeywordsData): TickerDto[] => {
+  return bestMatches.map<TickerDto>((entry) =>
     Object.keys(entry).reduce((acc, cur) => {
       acc[cur.replace(ENTRY_KEY_REGEXP, '')] = entry[cur];
       return acc;
-    }, {} as FindByKeywordsData),
+    }, {} as TickerDto),
   );
 };
 
 export const processPriceResult = (
   rawDailySeries: RawDailySeries | RawIntradaySeries,
   interval: 'daily' | '1min',
-): ProcessedPrice[] => {
+  ticker: string,
+): PriceDto[] => {
   const seriesKey =
     interval === 'daily' ? 'Time Series (Daily)' : 'Time Series (1min)';
 
-  return Object.entries(rawDailySeries[seriesKey]).map<ProcessedPrice>(
+  return Object.entries(rawDailySeries[seriesKey]).map<PriceDto>(
     ([key, value]) => {
       const entry = Object.keys(value).reduce(
         (acc, cur) => {
           acc[cur.replace(ENTRY_KEY_REGEXP, '')] = parseFloat(value[cur]);
           return acc;
         },
-        {} as Omit<ProcessedPrice, 'dateTime'>,
+        {} as Omit<PriceDto, 'dateTime'>,
       );
 
-      return { ...entry, dateTime: key };
+      return { ...entry, dateTime: key, ticker };
     },
   );
 };

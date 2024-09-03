@@ -6,10 +6,9 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
   NotFoundException,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Query,
   UseGuards,
@@ -17,28 +16,24 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
+import { TickerDto } from '@app/stocks-models';
+
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+
 import {
   TICKER_EXISTS_ERROR,
   TICKER_NOT_FOUND_ERROR,
 } from './ticker.constants';
-import { TickerDto } from './dto/ticker.dto';
 import { TickerService } from './ticker.service';
-import { ClientKafka } from '@nestjs/microservices';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('ticker')
 export class TickerController {
-  constructor(
-    private readonly tickerService: TickerService,
-    @Inject('STOCKS_DATA_COLLECTOR_CLIENT')
-    private readonly stocksDataCollectorClient: ClientKafka,
-  ) {}
+  constructor(private readonly tickerService: TickerService) {}
 
-  async onModuleInit() {
-    this.stocksDataCollectorClient.subscribeToResponseOf('tickers.search');
-
-    await this.stocksDataCollectorClient.connect();
+  @Get('search')
+  async search(@Query('keywords') keywords: string) {
+    return await this.tickerService.findByKeywords(keywords);
   }
 
   @Get('get/:symbol')
@@ -52,8 +47,8 @@ export class TickerController {
     return ticker;
   }
 
-  @UsePipes(new ValidationPipe())
   @Post('create')
+  @UsePipes(new ValidationPipe())
   async create(@Body() dto: TickerDto) {
     const candidate = await this.tickerService.findBySymbol(dto.symbol);
 
@@ -66,12 +61,7 @@ export class TickerController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.tickerService.remove(id);
-  }
-
-  @Get('search')
-  async search(@Query('keywords') keywords: string) {
-    return this.stocksDataCollectorClient.send('tickers.search', { keywords });
   }
 }

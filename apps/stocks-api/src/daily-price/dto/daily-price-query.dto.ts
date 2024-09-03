@@ -1,11 +1,15 @@
-import { IsDateString } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
-import { TickerDto } from '../../ticker/dto/ticker.dto';
-
-export class DailyPriceQueryDto extends TickerDto {
+export class DailyPriceQueryDto {
   @IsDateString()
+  @IsNotEmpty()
   from: string;
 
+  @IsString()
+  @IsNotEmpty()
+  symbol: string;
+
   @IsDateString()
+  @IsNotEmpty()
   to: string;
 }

@@ -1,23 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { ClientKafka } from '@nestjs/microservices';
+import { ILike, Repository } from 'typeorm';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Observable } from 'rxjs';
 
-import { Ticker } from '@app/stocks-models';
-
-import { TickerDto } from './dto/ticker.dto';
+import { Ticker, TickerDto } from '@app/stocks-models';
 
 @Injectable()
 export class TickerService {
   constructor(
     @InjectRepository(Ticker)
     private tickersRepository: Repository<Ticker>,
+    @Inject('TICKER_COLLECTOR_CLIENT')
+    private readonly tickerCollectorClient: ClientKafka,
   ) {}
+
+  async onModuleInit() {
+    this.tickerCollectorClient.subscribeToResponseOf('tickers.search');
+
+    await this.tickerCollectorClient.connect();
+  }
+
+  async findByKeywords(
+    keywords: string,
+  ): Promise<Ticker[] | Observable<TickerDto[]>> {
+    const result = await this.tickersRepository.find({
+      where: [
+        { symbol: ILike(`${keywords}%`) },
+        { name: ILike(`%${keywords}%`) },
+      ],
+    });
+
+    if (result.length) {
+      return result;
+    }
+
+    return this.tickerCollectorClient.send<TickerDto[], { keywords: string }>(
+      'tickers.search',
+      { keywords },
+    );
+  }
 
   async findBySymbol(symbol: string): Promise<Ticker> {
     return this.tickersRepository.findOneBy({ symbol });
   }
 
-  async findById(id: number): Promise<Ticker> {
+  async findById(id: string): Promise<Ticker> {
     return this.tickersRepository.findOneBy({ id });
   }
 
@@ -25,7 +53,7 @@ export class TickerService {
     return this.tickersRepository.create(dto).save();
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     await this.tickersRepository.delete(id);
   }
 }

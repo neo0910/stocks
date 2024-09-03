@@ -1,25 +1,9 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class TickerDto {
-  @IsString()
-  @IsNotEmpty()
-  symbol: string;
-
   @IsOptional()
   @IsString()
-  name?: string;
-
-  @IsOptional()
-  @IsString()
-  type?: string;
-
-  @IsOptional()
-  @IsString()
-  region?: string;
-
-  @IsOptional()
-  @IsString()
-  marketOpen?: string;
+  currency?: string;
 
   @IsOptional()
   @IsString()
@@ -27,9 +11,25 @@ export class TickerDto {
 
   @IsOptional()
   @IsString()
+  marketOpen?: string;
+
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  region?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  symbol: string;
+
+  @IsOptional()
+  @IsString()
   timezone?: string;
 
   @IsOptional()
   @IsString()
-  currency?: string;
+  type?: string;
 }

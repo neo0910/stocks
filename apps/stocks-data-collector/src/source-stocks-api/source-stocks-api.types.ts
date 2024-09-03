@@ -1,4 +1,4 @@
-import { STOCK_API_FUNCTIONS } from './stock-api.constants';
+import { STOCK_API_FUNCTIONS } from './source-stocks-api.constants';
 
 interface Params {
   apikey: string;
@@ -28,18 +28,6 @@ export interface GetIntradaySeriesParams extends Params {
 
 export type RawFindByKeywordsData = {
   bestMatches: Record<string, string>[];
-};
-
-export type FindByKeywordsData = {
-  currency: string;
-  marketClose: string;
-  marketOpen: string;
-  matchScore: string;
-  name: string;
-  region: string;
-  symbol: string;
-  timezone: string;
-  type: string;
 };
 
 type RawPrice = {
@@ -75,13 +63,4 @@ export type RawIntradaySeries = {
   'Time Series (1min)': {
     [key: string]: RawPrice;
   };
-};
-
-export type ProcessedPrice = {
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-  dateTime: string;
 };

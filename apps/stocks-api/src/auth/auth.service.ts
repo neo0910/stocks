@@ -21,7 +21,7 @@ export class AuthService {
     return this.usersRepository.find();
   }
 
-  async findById(id: number): Promise<User | null> {
+  async findById(id: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
 
@@ -29,7 +29,7 @@ export class AuthService {
     return this.usersRepository.findOneBy({ email });
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
   }
 
