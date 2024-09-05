@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 
 import { Ticker, TickerDto } from '@app/stocks-models';
 
@@ -12,7 +12,7 @@ export class TickerCollectorService {
   ) {}
 
   async findBySymbol(symbol: string): Promise<Ticker | null> {
-    return this.tickersRepository.findOneBy({ symbol });
+    return this.tickersRepository.findOneBy({ symbol: ILike(symbol) });
   }
 
   async createBulk(dtos: TickerDto[]): Promise<void> {

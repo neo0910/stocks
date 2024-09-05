@@ -18,7 +18,7 @@ export class DailyPriceCollectorService {
     if (!dtos.length) return;
 
     const ticker = await this.tickerCollectorService.findBySymbol(
-      dtos[0].ticker.toUpperCase(),
+      dtos[0].ticker,
     );
 
     if (!ticker) return;

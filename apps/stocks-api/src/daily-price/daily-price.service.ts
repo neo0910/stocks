@@ -2,20 +2,26 @@ import { Between, FindManyOptions, ILike, In, Or, Repository } from 'typeorm';
 import { ClientKafka } from '@nestjs/microservices';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 
 import { DailyPrice, PriceDto } from '@app/stocks-models';
 
+import { TickerService } from '../ticker/ticker.service';
+
 import { DailyPriceQueryDto } from './dto/daily-price-query.dto';
-import { isDailyPricesDBResultFull } from './daily-price.utils';
+import {
+  isDailyPricesDBResultFull,
+  processApiDailyPricesResult,
+} from './daily-price.utils';
 
 @Injectable()
 export class DailyPriceService {
   constructor(
     @InjectRepository(DailyPrice)
-    private dailyPricesRepository: Repository<DailyPrice>,
+    private readonly dailyPricesRepository: Repository<DailyPrice>,
     @Inject('DAILY_PRICE_COLLECTOR_CLIENT')
     private readonly dailyPriceCollectorClient: ClientKafka,
+    private readonly tickerService: TickerService,
   ) {}
 
   async onModuleInit() {
@@ -28,28 +34,41 @@ export class DailyPriceService {
     from,
     to,
     symbol,
-  }: DailyPriceQueryDto): Promise<DailyPrice[] | Observable<PriceDto[]>> {
+  }: DailyPriceQueryDto): Promise<Partial<DailyPrice>[]> {
+    const dateFrom = new Date(from);
+    const dateTo = new Date(to);
+
     const dbQuery: FindManyOptions<DailyPrice> = {
       order: { dateTime: 'ASC' },
       where: {
         dateTime: Or(
-          In([new Date(from).toISOString(), new Date(to).toISOString()]),
-          Between(new Date(from), new Date(to)),
+          Between(dateFrom, dateTo),
+          In([dateFrom.toISOString(), dateTo.toISOString()]),
         ),
         ticker: { symbol: ILike(symbol) },
       },
     };
 
-    const result = await this.dailyPricesRepository.find(dbQuery);
+    const dbResult = await this.dailyPricesRepository.find(dbQuery);
 
-    if (isDailyPricesDBResultFull(result, to)) {
-      return result;
+    if (isDailyPricesDBResultFull(dbResult, to)) {
+      return dbResult;
     }
 
-    // needs to be filtered with from/to
-    return this.dailyPriceCollectorClient.send<PriceDto[], { ticker: string }>(
-      'price.daily',
-      { ticker: symbol },
+    const apiResult = await lastValueFrom(
+      this.dailyPriceCollectorClient.send<PriceDto[], { ticker: string }>(
+        'price.daily',
+        {
+          ticker: symbol,
+        },
+      ),
     );
+
+    const ticker = await this.tickerService.findBySymbol(symbol);
+
+    return processApiDailyPricesResult(apiResult, ticker, {
+      start: dateFrom,
+      end: dateTo,
+    });
   }
 }

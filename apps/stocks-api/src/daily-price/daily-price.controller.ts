@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, Get, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 
 import { DailyPriceQueryDto } from './dto/daily-price-query.dto';
 import { DailyPriceService } from './daily-price.service';

@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DailyPrice } from '@app/stocks-models';
 
 import { getKafkaClientConfig } from '../shared/configs/kafka-client.config';
+import { TickerModule } from '../ticker/ticker.module';
 
 import { DailyPriceController } from './daily-price.controller';
 import { DailyPriceService } from './daily-price.service';
@@ -22,6 +23,7 @@ import { DailyPriceService } from './daily-price.service';
         useFactory: getKafkaClientConfig('price-daily'),
       },
     ]),
+    TickerModule,
   ],
   providers: [DailyPriceService],
 })
