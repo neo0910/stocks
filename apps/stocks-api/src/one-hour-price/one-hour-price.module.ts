@@ -3,28 +3,28 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { DailyPrice } from '@app/stocks-models';
+import { OneHourPrice } from '@app/stocks-models';
 
 import { getKafkaClientConfig } from '../shared/configs/kafka-client.config';
 import { TickerModule } from '../ticker/ticker.module';
 
-import { DailyPriceController } from './daily-price.controller';
-import { DailyPriceService } from './daily-price.service';
+import { OneHourPriceController } from './one-hour-price.controller';
+import { OneHourPriceService } from './one-hour-price.service';
 
 @Module({
-  controllers: [DailyPriceController],
+  controllers: [OneHourPriceController],
   imports: [
     ClientsModule.registerAsync([
       {
-        name: 'DAILY_PRICE_COLLECTOR_CLIENT',
+        name: 'ONE_HOUR_PRICE_COLLECTOR_CLIENT',
         imports: [ConfigModule],
         inject: [ConfigService],
-        useFactory: getKafkaClientConfig('price-daily'),
+        useFactory: getKafkaClientConfig('price-one-hour'),
       },
     ]),
     TickerModule,
-    TypeOrmModule.forFeature([DailyPrice]),
+    TypeOrmModule.forFeature([OneHourPrice]),
   ],
-  providers: [DailyPriceService],
+  providers: [OneHourPriceService],
 })
-export class DailyPriceModule {}
+export class OneHourPriceModule {}

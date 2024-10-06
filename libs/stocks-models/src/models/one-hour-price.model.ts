@@ -3,4 +3,4 @@ import { Entity } from 'typeorm';
 import { Price } from './price.model';
 
 @Entity()
-export class OneMinPrice extends Price {}
+export class OneHourPrice extends Price {}

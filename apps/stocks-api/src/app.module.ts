@@ -6,7 +6,7 @@ import { getTypeOrmConfig } from '@app/stocks-models/configs/type-orm.config';
 
 import { AuthModule } from './auth/auth.module';
 import { DailyPriceModule } from './daily-price/daily-price.module';
-import { OneMinPriceModule } from './one-min-price/one-min-price.module';
+import { OneHourPriceModule } from './one-hour-price/one-hour-price.module';
 import { TickerListModule } from './ticker-list/ticker-list.module';
 import { TickerModule } from './ticker/ticker.module';
 
@@ -22,7 +22,7 @@ import { TickerModule } from './ticker/ticker.module';
     TickerModule,
     TickerListModule,
     DailyPriceModule,
-    OneMinPriceModule,
+    OneHourPriceModule,
   ],
   controllers: [],
   providers: [],

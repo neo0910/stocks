@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Observable } from 'rxjs';
 
-import { Ticker, TickerDto } from '@app/stocks-models';
+import { Ticker, TickerDto, TICKERS_SEARCH_TOPIC } from '@app/stocks-models';
 
 @Injectable()
 export class TickerService {
@@ -16,7 +16,7 @@ export class TickerService {
   ) {}
 
   async onModuleInit() {
-    this.tickerCollectorClient.subscribeToResponseOf('tickers.search');
+    this.tickerCollectorClient.subscribeToResponseOf(TICKERS_SEARCH_TOPIC);
 
     await this.tickerCollectorClient.connect();
   }
@@ -36,7 +36,7 @@ export class TickerService {
     }
 
     return this.tickerCollectorClient.send<TickerDto[], { keywords: string }>(
-      'tickers.search',
+      TICKERS_SEARCH_TOPIC,
       { keywords },
     );
   }

@@ -16,7 +16,8 @@ import {
   RawIntradaySeries,
 } from './source-stocks-api.types';
 import {
-  getMonthParam,
+  getFormattedMonths,
+  isResultError,
   processFindResult,
   processPriceResult,
 } from './source-stocks-api.utils';
@@ -44,6 +45,12 @@ export class SourceStocksApiService {
         this.httpService.get<RawFindByKeywordsData>(BASE_URL, { params }),
       );
 
+      const { isError } = isResultError(data);
+
+      if (isError) {
+        return [];
+      }
+
       return processFindResult(data);
     } catch (e) {
       Logger.error(e);
@@ -63,6 +70,12 @@ export class SourceStocksApiService {
         this.httpService.get<RawDailySeries>(BASE_URL, { params }),
       );
 
+      const { isError } = isResultError(data);
+
+      if (isError) {
+        return [];
+      }
+
       return processPriceResult(data, 'daily', ticker);
     } catch (e) {
       Logger.error(e);
@@ -70,13 +83,13 @@ export class SourceStocksApiService {
   }
 
   async getIntradaySeries(ticker: string, from: string, to: string) {
-    const month = getMonthParam(from);
+    const months = getFormattedMonths(from, to);
 
     const params: GetIntradaySeriesParams = {
       apikey: this.token,
       function: STOCK_API_FUNCTIONS.SERIES_INTRADAY,
-      interval: '1min',
-      month,
+      interval: '60min',
+      month: months[0],
       outputsize: OutputSize.Full,
       symbol: ticker,
     };
@@ -86,7 +99,13 @@ export class SourceStocksApiService {
         this.httpService.get<RawIntradaySeries>(BASE_URL, { params }),
       );
 
-      return processPriceResult(data, '1min', ticker);
+      const { isError } = isResultError(data);
+
+      if (isError) {
+        return [];
+      }
+
+      return processPriceResult(data, '60min', ticker);
     } catch (e) {
       Logger.error(e);
     }

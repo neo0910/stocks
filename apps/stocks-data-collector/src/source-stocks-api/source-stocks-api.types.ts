@@ -60,7 +60,7 @@ export type RawIntradaySeries = {
     '5. Output Size': string;
     '6. Time Zone': string;
   };
-  'Time Series (1min)': {
+  'Time Series (60min)': {
     [key: string]: RawPrice;
   };
 };

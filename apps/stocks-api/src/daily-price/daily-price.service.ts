@@ -4,11 +4,15 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 
-import { DailyPrice, PriceDto } from '@app/stocks-models';
+import {
+  DailyPrice,
+  PRICE_DAILY_TOPIC,
+  PriceQueryDto,
+  PriceDto,
+} from '@app/stocks-models';
 
 import { TickerService } from '../ticker/ticker.service';
 
-import { DailyPriceQueryDto } from './dto/daily-price-query.dto';
 import {
   isDailyPricesDBResultFull,
   processApiDailyPricesResult,
@@ -25,7 +29,7 @@ export class DailyPriceService {
   ) {}
 
   async onModuleInit() {
-    this.dailyPriceCollectorClient.subscribeToResponseOf('price.daily');
+    this.dailyPriceCollectorClient.subscribeToResponseOf(PRICE_DAILY_TOPIC);
 
     await this.dailyPriceCollectorClient.connect();
   }
@@ -34,16 +38,13 @@ export class DailyPriceService {
     from,
     to,
     symbol,
-  }: DailyPriceQueryDto): Promise<Partial<DailyPrice>[]> {
-    const dateFrom = new Date(from);
-    const dateTo = new Date(to);
-
+  }: PriceQueryDto): Promise<Partial<DailyPrice>[]> {
     const dbQuery: FindManyOptions<DailyPrice> = {
       order: { dateTime: 'ASC' },
       where: {
         dateTime: Or(
-          Between(dateFrom, dateTo),
-          In([dateFrom.toISOString(), dateTo.toISOString()]),
+          Between(from, to),
+          In([from.toISOString(), to.toISOString()]),
         ),
         ticker: { symbol: ILike(symbol) },
       },
@@ -57,7 +58,7 @@ export class DailyPriceService {
 
     const apiResult = await lastValueFrom(
       this.dailyPriceCollectorClient.send<PriceDto[], { ticker: string }>(
-        'price.daily',
+        PRICE_DAILY_TOPIC,
         {
           ticker: symbol,
         },
@@ -67,8 +68,8 @@ export class DailyPriceService {
     const ticker = await this.tickerService.findBySymbol(symbol);
 
     return processApiDailyPricesResult(apiResult, ticker, {
-      start: dateFrom,
-      end: dateTo,
+      start: from,
+      end: to,
     });
   }
 }

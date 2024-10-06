@@ -8,7 +8,7 @@ import {
 
 import { PriceQueryDto } from '@app/stocks-models';
 
-import { DailyPriceService } from './daily-price.service';
+import { OneHourPriceService } from './one-hour-price.service';
 
 @UsePipes(
   new ValidationPipe({
@@ -16,12 +16,12 @@ import { DailyPriceService } from './daily-price.service';
     transformOptions: { enableImplicitConversion: true },
   }),
 )
-@Controller('daily-price')
-export class DailyPriceController {
-  constructor(private readonly dailyPriceService: DailyPriceService) {}
+@Controller('one-hour-price')
+export class OneHourPriceController {
+  constructor(private readonly oneHourPriceService: OneHourPriceService) {}
 
   @Get()
   async get(@Query() queryDto: PriceQueryDto) {
-    return await this.dailyPriceService.get(queryDto);
+    return await this.oneHourPriceService.get(queryDto);
   }
 }

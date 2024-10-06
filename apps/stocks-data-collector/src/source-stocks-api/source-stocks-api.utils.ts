@@ -1,6 +1,12 @@
+import { eachMonthOfInterval, format } from 'date-fns';
+
 import { PriceDto, TickerDto } from '@app/stocks-models';
 
-import { ENTRY_KEY_REGEXP } from './source-stocks-api.constants';
+import {
+  ENTRY_KEY_REGEXP,
+  ERROR_RESULT_KEY,
+  STOCK_API_MONTH_PARAM_FORMAT,
+} from './source-stocks-api.constants';
 import {
   RawDailySeries,
   RawFindByKeywordsData,
@@ -18,13 +24,23 @@ export const processFindResult = ({
   );
 };
 
+export const isResultError = (
+  data: RawDailySeries | RawIntradaySeries | RawFindByKeywordsData | string,
+) => {
+  if (!data[ERROR_RESULT_KEY]) {
+    return { isError: false };
+  }
+
+  return { isError: true, message: data[ERROR_RESULT_KEY] as string };
+};
+
 export const processPriceResult = (
   rawDailySeries: RawDailySeries | RawIntradaySeries,
-  interval: 'daily' | '1min',
+  interval: 'daily' | '60min',
   ticker: string,
 ): PriceDto[] => {
   const seriesKey =
-    interval === 'daily' ? 'Time Series (Daily)' : 'Time Series (1min)';
+    interval === 'daily' ? 'Time Series (Daily)' : 'Time Series (60min)';
 
   return Object.entries(rawDailySeries[seriesKey]).map<PriceDto>(
     ([key, value]) => {
@@ -41,4 +57,11 @@ export const processPriceResult = (
   );
 };
 
-export const getMonthParam = (dateTime: string): string => dateTime.slice(0, 7);
+export const getFormattedMonths = (from: string, to: string): string[] => {
+  const dates = eachMonthOfInterval({
+    start: new Date(from),
+    end: new Date(to),
+  });
+
+  return dates.map((d) => format(d, STOCK_API_MONTH_PARAM_FORMAT));
+};

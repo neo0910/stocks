@@ -7,3 +7,7 @@ export const enum STOCK_API_FUNCTIONS {
 }
 
 export const ENTRY_KEY_REGEXP = /\d\.\s/;
+
+export const STOCK_API_MONTH_PARAM_FORMAT = 'yyyy-MM';
+
+export const ERROR_RESULT_KEY = 'Error Message';

@@ -4,7 +4,7 @@ import { DailyPrice, PriceDto, Ticker } from '@app/stocks-models';
 
 import { Weekends } from './daily-price.constants';
 
-export const isDailyPricesDBResultFull = (result: DailyPrice[], to: string) => {
+export const isDailyPricesDBResultFull = (result: DailyPrice[], to: Date) => {
   if (!result.length) {
     return false;
   }
@@ -23,7 +23,7 @@ export const isDailyPricesDBResultFull = (result: DailyPrice[], to: string) => {
     return date;
   };
 
-  const dateTo = convertWeekendToWorkingDay(new Date(to));
+  const dateTo = convertWeekendToWorkingDay(to);
 
   return dateTo.getTime() === result.at(-1).dateTime.getTime();
 };
