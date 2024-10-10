@@ -1,6 +1,6 @@
 import { Between, FindManyOptions, ILike, In, Or, Repository } from 'typeorm';
 import { ClientKafka } from '@nestjs/microservices';
-import { Inject, Injectable } from '@nestjs/common';
+import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 
@@ -10,12 +10,16 @@ import {
   PRICE_ONE_HOUR_TOPIC,
   PriceDto,
   PriceQueryDto,
-  Ticker,
 } from '@app/stocks-models';
 
 import { TickerService } from '../ticker/ticker.service';
 
-import { processApiOneHourPricesResult } from './one-hour-price.utils';
+import {
+  isOneHourPricesDBResultFull,
+  processApiOneHourPricesResult,
+  toISO,
+} from './one-hour-price.utils';
+import { TICKER_NOT_FOUND } from './one-hour-price.constants';
 
 @Injectable()
 export class OneHourPriceService {
@@ -53,46 +57,34 @@ export class OneHourPriceService {
 
     const dbResult = await this.oneHourPricesRepository.find(dbQuery);
 
-    // @TODO add smart check for dbResult
-    if (dbResult.length) {
+    const { isFull, daysList } = isOneHourPricesDBResultFull(dbResult, {
+      from,
+      to,
+    });
+
+    if (isFull) {
       return dbResult;
     }
 
-    // 1. to do request to db - DONE
-    // 2. if response is not "empty" - return result - INCOMPLETED
-    // 3a. if is "empty" - trigger "price.one-hour" kafka event and get only necessary data (months) from 3rd API - DONE
-    // 3b. store result to db - INCOMPLETED
-    // 3c. return result - DONE
-    // collector
-    // 4. subscribe on price.one-hour (where) and schedule ticker 1hour data gathering via special db table - INCOMPLETED
-    // 5. run job in the beginning of every day and go through sheduled tickers db table (createdAt + ASC) - INCOMPLETED
-    // 6. delete records via transactions - INCOMPLETED
+    const ticker = await this.tickerService.findBySymbol(symbol);
+
+    if (!ticker) {
+      throw new BadGatewayException(TICKER_NOT_FOUND);
+    }
 
     const apiResult = await lastValueFrom(
       this.oneHourPriceCollectorClient.send<PriceDto[], OneHourPriceMessage>(
         PRICE_ONE_HOUR_TOPIC,
         {
-          from: from.toISOString(),
+          daysList: daysList.map(toISO),
           ticker: symbol,
-          to: to.toISOString(),
         },
       ),
     );
-
-    // @TODO getOrCreateTicker
-    const ticker = await this.tickerService.findBySymbol(symbol);
 
     return processApiOneHourPricesResult(apiResult, ticker, {
       start: from,
       end: to,
     });
-  }
-
-  // keep for future use
-  async insert(prices: any[], ticker: Ticker): Promise<void> {
-    await this.oneHourPricesRepository.save(
-      prices.map((price) => ({ ...price, ticker })),
-      { chunk: prices.length / 1000 },
-    );
   }
 }

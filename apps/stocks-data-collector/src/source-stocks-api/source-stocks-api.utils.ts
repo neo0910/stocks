@@ -1,4 +1,4 @@
-import { eachMonthOfInterval, format } from 'date-fns';
+import { format } from 'date-fns';
 
 import { PriceDto, TickerDto } from '@app/stocks-models';
 
@@ -57,11 +57,5 @@ export const processPriceResult = (
   );
 };
 
-export const getFormattedMonths = (from: string, to: string): string[] => {
-  const dates = eachMonthOfInterval({
-    start: new Date(from),
-    end: new Date(to),
-  });
-
-  return dates.map((d) => format(d, STOCK_API_MONTH_PARAM_FORMAT));
-};
+export const getFormattedMonth = (dateString: string) =>
+  format(new Date(dateString), STOCK_API_MONTH_PARAM_FORMAT);

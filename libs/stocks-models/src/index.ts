@@ -14,8 +14,14 @@ export { SearchTickersMessage } from './types/messages';
 export { DailyPriceMessage } from './types/messages';
 export { OneHourPriceMessage } from './types/messages';
 
-export { TICKERS_SEARCH_TOPIC } from './constants';
+export {
+  TICKERS_SEARCH_TOPIC,
+  TICKERS_SEARCH_REPLY_TOPIC,
+  PRICE_DAILY_TOPIC,
+  PRICE_DAILY_REPLY_TOPIC,
+  PRICE_ONE_HOUR_TOPIC,
+  PRICE_ONE_HOUR_REPLY_TOPIC,
+} from './constants';
 export { ONE_SECOND_IN_MS } from './constants';
 export { ONE_MINUTE_IN_MS } from './constants';
-export { PRICE_DAILY_TOPIC } from './constants';
-export { PRICE_ONE_HOUR_TOPIC } from './constants';
+export { ONE_HOUR_IN_MS } from './constants';

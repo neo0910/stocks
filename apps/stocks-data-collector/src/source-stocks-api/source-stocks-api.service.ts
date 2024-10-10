@@ -16,7 +16,7 @@ import {
   RawIntradaySeries,
 } from './source-stocks-api.types';
 import {
-  getFormattedMonths,
+  getFormattedMonth,
   isResultError,
   processFindResult,
   processPriceResult,
@@ -54,6 +54,7 @@ export class SourceStocksApiService {
       return processFindResult(data);
     } catch (e) {
       Logger.error(e);
+      return [];
     }
   }
 
@@ -79,22 +80,26 @@ export class SourceStocksApiService {
       return processPriceResult(data, 'daily', ticker);
     } catch (e) {
       Logger.error(e);
+      return [];
     }
   }
 
-  async getIntradaySeries(ticker: string, from: string, to: string) {
-    const months = getFormattedMonths(from, to);
+  async getIntradaySeries(ticker: string, daysList: string[]) {
+    const months = daysList.reduce(
+      (acc, cur) => acc.add(getFormattedMonth(cur)),
+      new Set<string>(),
+    );
 
-    const params: GetIntradaySeriesParams = {
-      apikey: this.token,
-      function: STOCK_API_FUNCTIONS.SERIES_INTRADAY,
-      interval: '60min',
-      month: months[0],
-      outputsize: OutputSize.Full,
-      symbol: ticker,
-    };
+    const promises = [...months].map(async (month) => {
+      const params: GetIntradaySeriesParams = {
+        apikey: this.token,
+        function: STOCK_API_FUNCTIONS.SERIES_INTRADAY,
+        interval: '60min',
+        month,
+        outputsize: OutputSize.Full,
+        symbol: ticker,
+      };
 
-    try {
       const { data } = await lastValueFrom(
         this.httpService.get<RawIntradaySeries>(BASE_URL, { params }),
       );
@@ -106,8 +111,13 @@ export class SourceStocksApiService {
       }
 
       return processPriceResult(data, '60min', ticker);
+    });
+
+    try {
+      return (await Promise.all(promises)).flat();
     } catch (e) {
       Logger.error(e);
+      return [];
     }
   }
 }

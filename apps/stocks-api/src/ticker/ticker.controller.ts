@@ -1,6 +1,4 @@
 import {
-  BadRequestException,
-  Body,
   Controller,
   Delete,
   Get,
@@ -9,21 +7,13 @@ import {
   NotFoundException,
   Param,
   ParseUUIDPipe,
-  Post,
   Query,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
-
-import { TickerDto } from '@app/stocks-models';
 
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
-import {
-  TICKER_EXISTS_ERROR,
-  TICKER_NOT_FOUND_ERROR,
-} from './ticker.constants';
+import { TICKER_NOT_FOUND_ERROR } from './ticker.constants';
 import { TickerService } from './ticker.service';
 
 @UseGuards(JwtAuthGuard)
@@ -45,18 +35,6 @@ export class TickerController {
     }
 
     return ticker;
-  }
-
-  @Post('create')
-  @UsePipes(new ValidationPipe())
-  async create(@Body() dto: TickerDto) {
-    const candidate = await this.tickerService.findBySymbol(dto.symbol);
-
-    if (candidate) {
-      throw new BadRequestException(TICKER_EXISTS_ERROR);
-    }
-
-    return this.tickerService.create(dto);
   }
 
   @Delete(':id')

@@ -29,7 +29,7 @@ export class SourceStocksApiController {
   }
 
   @MessagePattern(PRICE_ONE_HOUR_TOPIC)
-  async getOneHourPrices(@Payload() { from, ticker, to }: OneHourPriceMessage) {
-    return this.sourceStocksApiService.getIntradaySeries(ticker, from, to);
+  async getOneHourPrices(@Payload() { daysList, ticker }: OneHourPriceMessage) {
+    return this.sourceStocksApiService.getIntradaySeries(ticker, daysList);
   }
 }

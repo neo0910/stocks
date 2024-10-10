@@ -7,6 +7,5 @@ export type DailyPriceMessage = {
 };
 
 export type OneHourPriceMessage = DailyPriceMessage & {
-  from: string;
-  to: string;
+  daysList: string[];
 };

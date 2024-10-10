@@ -1,6 +1,6 @@
 import { Between, FindManyOptions, ILike, In, Or, Repository } from 'typeorm';
 import { ClientKafka } from '@nestjs/microservices';
-import { Inject, Injectable } from '@nestjs/common';
+import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 
@@ -17,6 +17,7 @@ import {
   isDailyPricesDBResultFull,
   processApiDailyPricesResult,
 } from './daily-price.utils';
+import { TICKER_NOT_FOUND } from './daily-price.constants';
 
 @Injectable()
 export class DailyPriceService {
@@ -56,6 +57,12 @@ export class DailyPriceService {
       return dbResult;
     }
 
+    const ticker = await this.tickerService.findBySymbol(symbol);
+
+    if (!ticker) {
+      throw new BadGatewayException(TICKER_NOT_FOUND);
+    }
+
     const apiResult = await lastValueFrom(
       this.dailyPriceCollectorClient.send<PriceDto[], { ticker: string }>(
         PRICE_DAILY_TOPIC,
@@ -64,8 +71,6 @@ export class DailyPriceService {
         },
       ),
     );
-
-    const ticker = await this.tickerService.findBySymbol(symbol);
 
     return processApiDailyPricesResult(apiResult, ticker, {
       start: from,

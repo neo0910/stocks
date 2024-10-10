@@ -1,7 +1,7 @@
 import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
-import { TickerDto } from '@app/stocks-models';
+import { TickerDto, TICKERS_SEARCH_REPLY_TOPIC } from '@app/stocks-models';
 
 import { TickerCollectorService } from './ticker-collector.service';
 
@@ -12,7 +12,7 @@ export class TickerCollectorController {
   ) {}
 
   @UsePipes(new ValidationPipe())
-  @MessagePattern('tickers.search.reply')
+  @MessagePattern(TICKERS_SEARCH_REPLY_TOPIC)
   async createBulk(@Payload() message: TickerDto[]) {
     await this.tickerCollectorService.createBulk(message);
   }

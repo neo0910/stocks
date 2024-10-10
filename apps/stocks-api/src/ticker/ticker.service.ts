@@ -41,7 +41,7 @@ export class TickerService {
     );
   }
 
-  async findBySymbol(symbol: string): Promise<Ticker> {
+  async findBySymbol(symbol: string): Promise<Ticker | null> {
     return this.tickersRepository.findOneBy({ symbol: ILike(symbol) });
   }
 

@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from '@app/stocks-models';
 
 import { DailyPriceCollectorModule } from './daily-price-collector/daily-price-collector.module';
+import { OneHourPriceCollectorModule } from './one-hour-price-collector/one-hour-price-collector.module';
 import { SourceStocksApiModule } from './source-stocks-api/source-stocks-api.module';
 import { TickerCollectorModule } from './ticker-collector/ticker-collector.module';
 
@@ -17,6 +18,7 @@ import { TickerCollectorModule } from './ticker-collector/ticker-collector.modul
       useFactory: getTypeOrmConfig,
     }),
     DailyPriceCollectorModule,
+    OneHourPriceCollectorModule,
     SourceStocksApiModule,
     TickerCollectorModule,
   ],

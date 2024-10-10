@@ -1,4 +1,1 @@
-export const enum Weekends {
-  Sunday = 0,
-  Saturday = 6,
-}
+export const TICKER_NOT_FOUND = 'Ticker not found';

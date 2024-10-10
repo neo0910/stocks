@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
-import { PriceDto } from '@app/stocks-models';
+import { PRICE_DAILY_REPLY_TOPIC, PriceDto } from '@app/stocks-models';
 
 import { DailyPriceCollectorService } from './daily-price-collector.service';
 
@@ -11,7 +11,7 @@ export class DailyPriceCollectorController {
     private readonly dailyPriceCollectorService: DailyPriceCollectorService,
   ) {}
 
-  @MessagePattern('price.daily.reply')
+  @MessagePattern(PRICE_DAILY_REPLY_TOPIC)
   async createBulk(@Payload() message: PriceDto[]) {
     await this.dailyPriceCollectorService.createBulk(message);
   }
