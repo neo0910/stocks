@@ -1,11 +1,11 @@
 import { format } from 'date-fns';
 
 import { PriceDto, TickerDto } from '@app/stocks-models';
+import { STOCK_API_MONTH_PARAM_FORMAT } from '@app/stocks-models/constants';
 
 import {
   ENTRY_KEY_REGEXP,
   ERROR_RESULT_KEY,
-  STOCK_API_MONTH_PARAM_FORMAT,
 } from './source-stocks-api.constants';
 import {
   RawDailySeries,

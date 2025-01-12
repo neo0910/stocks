@@ -25,6 +25,7 @@ const dateWithoutOffset = (d: Date): Date => {
 
 /**
  * @param result should be SORTED ASC for this check
+ * @TODO improve by excluding holidays
  */
 export const isOneHourPricesDBResultFull = (
   result: OneHourPrice[],

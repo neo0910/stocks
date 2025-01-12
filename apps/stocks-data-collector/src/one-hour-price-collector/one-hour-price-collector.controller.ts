@@ -13,6 +13,8 @@ export class OneHourPriceCollectorController {
 
   @MessagePattern(PRICE_ONE_HOUR_REPLY_TOPIC)
   async createBulk(@Payload() message: PriceDto[]) {
-    await this.oneHourPriceCollectorService.createBulk(message);
+    await this.oneHourPriceCollectorService.createBulkAndScheduleGathering(
+      message,
+    );
   }
 }
