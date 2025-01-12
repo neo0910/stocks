@@ -1,6 +1,6 @@
 ## Installation
 
-For the first time install dependencies in each service locally:
+For the first time install dependencies in each service locally
 
 ```bash
 $ yarn
