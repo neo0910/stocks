@@ -8,4 +8,11 @@ export const enum STOCK_API_FUNCTIONS {
 
 export const ENTRY_KEY_REGEXP = /\d\.\s/;
 
-export const ERROR_RESULT_KEY = 'Error Message';
+export const LIMIT_ERROR_SUBSTRINGS = [
+  'detected',
+  'limit',
+  'requests',
+  'limits',
+];
+
+export const LIMIT_EXCEEDED_ERROR = 'limit exceeded';

@@ -5,7 +5,11 @@ import { lastValueFrom } from 'rxjs';
 
 import { PriceDto } from '@app/stocks-models';
 
-import { BASE_URL, STOCK_API_FUNCTIONS } from './source-stocks-api.constants';
+import {
+  BASE_URL,
+  LIMIT_EXCEEDED_ERROR,
+  STOCK_API_FUNCTIONS,
+} from './source-stocks-api.constants';
 import {
   FindByKeywordsParams,
   GetDailySeriesParams,
@@ -17,13 +21,16 @@ import {
 } from './source-stocks-api.types';
 import {
   getFormattedMonth,
-  isResultError,
+  isLimitExceededError,
   processFindResult,
   processPriceResult,
 } from './source-stocks-api.utils';
+import { AxiosResponse } from 'axios';
 
 @Injectable()
 export class SourceStocksApiService {
+  private readonly logger = new Logger(SourceStocksApiService.name);
+
   token: string;
 
   constructor(
@@ -40,20 +47,16 @@ export class SourceStocksApiService {
       keywords,
     };
 
+    let result: AxiosResponse<RawFindByKeywordsData>;
+
     try {
-      const { data } = await lastValueFrom(
+      result = await lastValueFrom(
         this.httpService.get<RawFindByKeywordsData>(BASE_URL, { params }),
       );
 
-      const { isError } = isResultError(data);
-
-      if (isError) {
-        return [];
-      }
-
-      return processFindResult(data);
+      return processFindResult(result.data);
     } catch (e) {
-      Logger.error(e);
+      this.logger.error(e, result.data);
       return [];
     }
   }
@@ -66,20 +69,16 @@ export class SourceStocksApiService {
       symbol: ticker,
     };
 
+    let result: AxiosResponse<RawDailySeries>;
+
     try {
-      const { data } = await lastValueFrom(
+      result = await lastValueFrom(
         this.httpService.get<RawDailySeries>(BASE_URL, { params }),
       );
 
-      const { isError } = isResultError(data);
-
-      if (isError) {
-        return [];
-      }
-
-      return processPriceResult(data, 'daily', ticker);
+      return processPriceResult(result.data, 'daily', ticker);
     } catch (e) {
-      Logger.error(e);
+      this.logger.error(e, result.data);
       return [];
     }
   }
@@ -89,6 +88,8 @@ export class SourceStocksApiService {
       (acc, cur) => acc.add(getFormattedMonth(cur)),
       new Set<string>(),
     );
+
+    let lastData: RawIntradaySeries;
 
     const promises = [...months].map(async (month) => {
       const params: GetIntradaySeriesParams = {
@@ -104,11 +105,7 @@ export class SourceStocksApiService {
         this.httpService.get<RawIntradaySeries>(BASE_URL, { params }),
       );
 
-      const { isError } = isResultError(data);
-
-      if (isError) {
-        return [];
-      }
+      lastData = data;
 
       return processPriceResult(data, '60min', ticker);
     });
@@ -116,8 +113,37 @@ export class SourceStocksApiService {
     try {
       return (await Promise.all(promises)).flat();
     } catch (e) {
-      Logger.error(e);
+      this.logger.error(e, lastData);
       return [];
+    }
+  }
+
+  async gatherIntradaySeries(ticker: string, month: string) {
+    const params: GetIntradaySeriesParams = {
+      apikey: this.token,
+      function: STOCK_API_FUNCTIONS.SERIES_INTRADAY,
+      interval: '60min',
+      month,
+      outputsize: OutputSize.Full,
+      symbol: ticker,
+    };
+
+    let result: AxiosResponse<RawIntradaySeries>;
+
+    try {
+      result = await lastValueFrom(
+        this.httpService.get<RawIntradaySeries>(BASE_URL, { params }),
+      );
+
+      return processPriceResult(result.data, '60min', ticker);
+    } catch (e) {
+      this.logger.error(e, result.data);
+
+      if (isLimitExceededError(result.data)) {
+        throw new Error(LIMIT_EXCEEDED_ERROR);
+      }
+
+      throw e;
     }
   }
 }

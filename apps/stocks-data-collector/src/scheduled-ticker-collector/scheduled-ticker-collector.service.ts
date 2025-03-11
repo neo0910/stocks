@@ -10,9 +10,11 @@ import { ScheduledTicker, Ticker } from '@app/stocks-models';
 import { toISO } from '@app/stocks-models/utils/date.utils';
 
 import {
+  getScheduledTickerErrorLog,
   getScheduledTickerSuccessLog,
   mapMonthsForGathering,
 } from './scheduled-ticker-collector.utils';
+import { LIMIT_EXCEEDED_ERROR } from '../source-stocks-api/source-stocks-api.constants';
 import { OneHourPriceCollectorService } from '../one-hour-price-collector/one-hour-price-collector.service';
 import { SourceStocksApiService } from '../source-stocks-api/source-stocks-api.service';
 
@@ -46,7 +48,8 @@ export class ScheduledTickerCollectorService {
   async gathering() {
     const dbQueryForOldestNotDoneScheduledTicker: FindManyOptions<ScheduledTicker> =
       {
-        order: { createdAt: 'ASC' },
+        // updatedAt to move errored tickers to the end
+        order: { updatedAt: 'ASC' },
         skip: 0,
         take: 1,
         where: {
@@ -70,10 +73,9 @@ export class ScheduledTickerCollectorService {
       }
 
       try {
-        // @TODO throw error if limit exceeded
-        const res = await this.sourceStocksApiService.getIntradaySeries(
+        const res = await this.sourceStocksApiService.gatherIntradaySeries(
           scheduledTicker.ticker.symbol,
-          [toISO(scheduledTicker.dateTime)],
+          toISO(scheduledTicker.dateTime),
         );
 
         await this.oneHourPriceCollectorService.createBulkAndScheduleGathering(
@@ -91,8 +93,17 @@ export class ScheduledTickerCollectorService {
         await scheduledTicker.save();
 
         this.logger.log(getScheduledTickerSuccessLog(scheduledTicker));
-      } catch (error) {
-        requestLimitExceeded = true;
+      } catch (e) {
+        if (e.message !== LIMIT_EXCEEDED_ERROR) {
+          scheduledTicker.status = ScheduledStatus.ERROR;
+          await scheduledTicker.save();
+        } else {
+          requestLimitExceeded = true;
+        }
+
+        this.logger.error(
+          getScheduledTickerErrorLog(scheduledTicker, e.message),
+        );
       }
     }
   }

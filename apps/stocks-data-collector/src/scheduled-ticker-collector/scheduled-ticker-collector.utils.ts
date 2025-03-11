@@ -24,3 +24,11 @@ export const getScheduledTickerSuccessLog = ({
 }: ScheduledTicker) => `
     Scheduled Ticker [${ticker.symbol}] ${ticker.name} for ${format(dateTime, STOCK_API_MONTH_PARAM_FORMAT)} date was gathered with status ${status}
   `;
+
+export const getScheduledTickerErrorLog = (
+  { dateTime, status, ticker }: ScheduledTicker,
+  message: string,
+) => `
+    Scheduled Ticker [${ticker.symbol}] ${ticker.name} for ${format(dateTime, STOCK_API_MONTH_PARAM_FORMAT)} date was not gathered due error "${message}".
+    Status is ${status}
+  `;

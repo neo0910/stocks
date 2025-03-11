@@ -1,11 +1,12 @@
 import { format } from 'date-fns';
+import { isString } from 'class-validator';
 
 import { PriceDto, TickerDto } from '@app/stocks-models';
 import { STOCK_API_MONTH_PARAM_FORMAT } from '@app/stocks-models/constants';
 
 import {
   ENTRY_KEY_REGEXP,
-  ERROR_RESULT_KEY,
+  LIMIT_ERROR_SUBSTRINGS,
 } from './source-stocks-api.constants';
 import {
   RawDailySeries,
@@ -24,16 +25,14 @@ export const processFindResult = ({
   );
 };
 
-export const isResultError = (
-  data: RawDailySeries | RawIntradaySeries | RawFindByKeywordsData | string,
-) => {
-  if (!data[ERROR_RESULT_KEY]) {
-    return { isError: false };
-  }
+export const isLimitExceededError = (data: Record<string, unknown>) => {
+  const allStringValues = Object.values(data)
+    .filter(isString)
+    .reduce((acc, cur) => acc + cur, '');
 
-  console.log('data[ERROR_RESULT_KEY] :>> ', data[ERROR_RESULT_KEY]);
-
-  return { isError: true, message: data[ERROR_RESULT_KEY] as string };
+  return LIMIT_ERROR_SUBSTRINGS.some((substr) =>
+    allStringValues.includes(substr),
+  );
 };
 
 export const processPriceResult = (
