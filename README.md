@@ -27,3 +27,4 @@ $ yarn start:dev stocks-data-collector
 - pgAdmin - [http://localhost:5050](http://localhost:5050/)
 - Kafka dev environment - [http://localhost:3040/](http://localhost:3040/)
 - API - [http://localhost:3000](http://localhost:3000/)
+- 3rd API docs - [https://www.alphavantage.co/documentation](https://www.alphavantage.co/documentation)
