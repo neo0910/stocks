@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { FindManyOptions, QueryFailedError, Repository } from 'typeorm';
 
 import { DailyPrice, PriceDto } from '@app/stocks-models';
 
@@ -8,6 +8,8 @@ import { TickerCollectorService } from '../ticker-collector/ticker-collector.ser
 
 @Injectable()
 export class DailyPriceCollectorService {
+  private readonly logger = new Logger(DailyPriceCollectorService.name);
+
   constructor(
     @InjectRepository(DailyPrice)
     private dailyPricesRepository: Repository<DailyPrice>,
@@ -44,10 +46,19 @@ export class DailyPriceCollectorService {
       return;
     }
 
-    await this.dailyPricesRepository.insert(
-      dtos
-        .filter((dto) => new Date(dto.dateTime) > latestTickerPrice.dateTime)
-        .map((dto) => ({ ...dto, ticker })),
-    );
+    try {
+      await this.dailyPricesRepository.insert(
+        dtos
+          .filter((dto) => new Date(dto.dateTime) > latestTickerPrice.dateTime)
+          .map((dto) => ({ ...dto, ticker })),
+      );
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        this.logger.error(error.message);
+      } else {
+        this.logger.error(error);
+        throw error;
+      }
+    }
   }
 }

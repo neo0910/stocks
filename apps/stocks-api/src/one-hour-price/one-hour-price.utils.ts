@@ -13,8 +13,7 @@ import {
   PriceDto,
   Ticker,
 } from '@app/stocks-models';
-
-export const toISO = (d: Date) => d.toISOString();
+import { toISO } from '@app/stocks-models/utils/date.utils';
 
 const dateWithoutOffset = (d: Date): Date => {
   const copiedDate = new Date(d.getTime());
@@ -25,7 +24,6 @@ const dateWithoutOffset = (d: Date): Date => {
 
 /**
  * @param result should be SORTED ASC for this check
- * @TODO improve by excluding holidays
  */
 export const isOneHourPricesDBResultFull = (
   result: OneHourPrice[],

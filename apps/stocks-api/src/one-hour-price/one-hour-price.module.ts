@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { OneHourPrice } from '@app/stocks-models';
 
 import { getKafkaClientConfig } from '../shared/configs/kafka-client.config';
+import { ScheduledTickerModule } from '../scheduled-ticker/scheduled-ticker.module';
 import { TickerModule } from '../ticker/ticker.module';
 
 import { OneHourPriceController } from './one-hour-price.controller';
@@ -22,6 +23,7 @@ import { OneHourPriceService } from './one-hour-price.service';
         useFactory: getKafkaClientConfig('price-one-hour'),
       },
     ]),
+    ScheduledTickerModule,
     TickerModule,
     TypeOrmModule.forFeature([OneHourPrice]),
   ],

@@ -16,9 +16,12 @@ export class TickerCollectorService {
   }
 
   async createBulk(dtos: TickerDto[]): Promise<void> {
-    await this.tickersRepository.upsert(dtos, {
-      conflictPaths: ['symbol'],
-      skipUpdateIfNoValuesChanged: true,
-    });
+    await this.tickersRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Ticker)
+      .values(dtos)
+      .orIgnore()
+      .execute();
   }
 }

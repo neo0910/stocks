@@ -9,6 +9,7 @@ export { User } from './models/user.model';
 
 export { PriceDto } from './dtos/price.dto';
 export { PriceQueryDto } from './dtos/price-query.dto';
+export { ScheduledTickerQueryDto } from './dtos/scheduled-ticker-query.dto';
 export { TickerDto } from './dtos/ticker.dto';
 
 export { SearchTickersMessage } from './types/messages';

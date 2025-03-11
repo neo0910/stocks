@@ -1,4 +1,4 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, Unique } from 'typeorm';
 
 import { ONE_MINUTE_IN_MS } from '../constants';
 
@@ -6,14 +6,17 @@ import { Base } from './base.model';
 import { Ticker } from './ticker.model';
 
 export enum ScheduledStatus {
-  DONE = 'done',
-  ERROR = 'error',
-  INCOMPLETED = 'incompleted',
-  NODATA = 'nodata',
+  // initial
+  INCOMPLETED = 'incompleted', // current month
   READY = 'ready',
+  // intermediate
+  ERROR = 'error',
+  // final
+  DONE = 'done',
 }
 
 @Entity()
+@Unique('UQ_scheduled_ticker_datetime_ticker', ['dateTime', 'ticker'])
 export class ScheduledTicker extends Base {
   @ManyToOne(() => Ticker, { eager: true })
   @JoinColumn()

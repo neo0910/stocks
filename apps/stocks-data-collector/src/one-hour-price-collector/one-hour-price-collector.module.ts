@@ -5,11 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { OneHourPrice } from '@app/stocks-models';
 
-import { ScheduledTickerModule } from '../scheduled-ticker/scheduled-ticker.module';
+import { ScheduledTickerCollectorModule } from '../scheduled-ticker-collector/scheduled-ticker-collector.module';
 import { TickerCollectorModule } from '../ticker-collector/ticker-collector.module';
 
 import { OneHourPriceCollectorController } from './one-hour-price-collector.controller';
 import { OneHourPriceCollectorService } from './one-hour-price-collector.service';
+import { SourceStocksApiModule } from '../source-stocks-api/source-stocks-api.module';
 
 @Module({
   controllers: [OneHourPriceCollectorController],
@@ -17,8 +18,9 @@ import { OneHourPriceCollectorService } from './one-hour-price-collector.service
   imports: [
     ConfigModule,
     HttpModule,
-    ScheduledTickerModule,
     TypeOrmModule.forFeature([OneHourPrice]),
+    ScheduledTickerCollectorModule,
+    SourceStocksApiModule,
     TickerCollectorModule,
   ],
   providers: [OneHourPriceCollectorService],

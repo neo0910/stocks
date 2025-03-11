@@ -31,6 +31,8 @@ export const isResultError = (
     return { isError: false };
   }
 
+  console.log('data[ERROR_RESULT_KEY] :>> ', data[ERROR_RESULT_KEY]);
+
   return { isError: true, message: data[ERROR_RESULT_KEY] as string };
 };
 

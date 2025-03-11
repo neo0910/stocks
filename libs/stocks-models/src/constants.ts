@@ -12,3 +12,5 @@ export const PRICE_ONE_HOUR_REPLY_TOPIC = 'price.one-hour.reply';
 export const OLDEST_SUPPORTED_BY_API_DATE = '2000-01';
 
 export const STOCK_API_MONTH_PARAM_FORMAT = 'yyyy-MM';
+
+export const TICKER_NOT_FOUND = 'Ticker not found';

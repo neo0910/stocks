@@ -9,11 +9,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  await app
-    .connectMicroservice<MicroserviceOptions>(
-      getKafkaTransportConfig(configService),
-    )
-    .listen();
+  app.connectMicroservice<MicroserviceOptions>(
+    getKafkaTransportConfig(configService),
+  );
+
+  await app.startAllMicroservices();
+  await app.listen(configService.get('COLLECTOR_PORT'));
 }
 
 bootstrap();
