@@ -44,7 +44,7 @@ export class ScheduledTickerCollectorService {
       .execute();
   }
 
-  @Cron('30 * * * * *')
+  @Cron('0 1 * * *')
   async gathering() {
     const dbQueryForOldestNotDoneScheduledTicker: FindManyOptions<ScheduledTicker> =
       {
