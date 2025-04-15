@@ -6,20 +6,10 @@ For the first time install dependencies in each service locally:
 $ yarn
 ```
 
-Then start docker-compose:
+Then start all services:
 
 ```bash
-$ docker-compose up -d
-```
-
-Finally start services:
-
-```bash
-$ yarn start:dev
-```
-
-```bash
-$ yarn start:dev stocks-data-collector
+$ yarn start
 ```
 
 ## Links
